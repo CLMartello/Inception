@@ -1,0 +1,22 @@
+# Environment configuration
+.env
+srcs/.env
+
+# Local credentials
+secrets/
+
+# Persistent application data
+data/
+
+# TLS private material
+*.key
+*.crt
+*.pem
+
+# Local editor and operating-systems files
+*~
+*.swp
+.DS_Store
+
+# Logs
+*.log
