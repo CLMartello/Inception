@@ -37,68 +37,6 @@ git clone <repository-url> inception
 cd inception
 ```
 
-The project configuration is stored in:
-
-```text
-srcs/.env
-```
-
-Create this file if it does not exist. It must define the non-secret configuration used by Docker Compose. For example:
-
-```env
-DOMAIN_NAME=clumertz.42.fr
-
-MYSQL_DATABASE=wordpress
-MYSQL_USER=wpuser
-
-WP_TITLE=Inception
-WP_ADMIN_USER=clumertz_owner
-WP_ADMIN_EMAIL=replace-with-your-email@example.com
-WP_USER=clumertz_user
-WP_USER_EMAIL=replace-with-your-email@example.com
-
-DATA_PATH=/home/clumertz/data
-```
-
-Change the login, email addresses, domain, and data path when running the project under another user account.
-
-## Secrets
-
-Create the secrets directory:
-
-```bash
-mkdir -p secrets
-```
-
-Create the required secret files:
-
-```bash
-touch secrets/db_password.txt
-touch secrets/db_root_password.txt
-touch secrets/wp_admin_password.txt
-touch secrets/wp_user_password.txt
-```
-
-Edit each file and insert one non-empty password as follows:
-
-- `db_password.txt`: MariaDB password used by WordPress.
-- `db_root_password.txt`: MariaDB root password.
-- `wp_admin_password.txt`: WordPress administrator password.
-- `wp_user_password.txt`: regular WordPress user password.
-
-Restrict access to the secret files:
-
-```bash
-chmod 600 secrets/*.txt
-```
-
-The secret files and `srcs/.env` must not be committed to Git. Confirm that Git ignores them:
-
-```bash
-git check-ignore -v secrets/db_password.txt
-git check-ignore -v srcs/.env
-```
-
 ## Host data directories
 
 Create the directories used for persistent data:
