@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta
+		name="viewport"
+		content="width=device-width, initial-scale=1.0"
+	>
+	<meta
+		name="description"
+		content="Preview of the upcoming Budget Planner web application."
+	>
+
+	<title>Budget Planner — Coming Soon</title>
+
+  <link rel="stylesheet" href="style.css">
+	
+</head>
+
+<body>
+	<div class="app">
+		<aside class="sidebar">
+			<div class="brand">
+				<div class="brand-mark">€</div>
+				<div>
+					<h1>Budget Planner</h1>
+					<p>Personal finance, simplified</p>
+				</div>
+			</div>
+
+			<nav class="navigation" aria-label="Main navigation">
+				<a class="active" href="#">⌂ Dashboard</a>
+				<a href="#">▣ Accounts</a>
+				<a href="#">↕ Transactions</a>
+				<a href="#">⇄ Transfers</a>
+				<a href="#">◎ Budgets</a>
+				<a href="#">◫ Reports</a>
+				<a href="#">⚙ Settings</a>
+			</nav>
+
+			<div class="sidebar-footer">
+				<strong>Preview version</strong>
+				<br>
+				The interactive web application is currently
+				under development.
+			</div>
+		</aside>
+
+		<main>
+			<header class="topbar">
+				<div>
+					<h2>Financial overview</h2>
+					<p>Your finances, all in one place.</p>
+				</div>
+
+				<button class="preview-button" disabled>
+					+ Add transaction
+				</button>
+			</header>
+
+			<section class="coming-soon">
+				<div>
+					<span class="status">Coming soon</span>
+					<h3>Budget Planner for the web</h3>
+					<p>
+						A clear and accessible way to manage accounts,
+						record transactions, transfer funds, and understand
+						spending habits. This page is a preview of the
+						interface currently in development.
+					</p>
+				</div>
+
+				<div class="progress" aria-label="Development progress">
+					<div class="progress-label">
+						<span>Development</span>
+						<span>72%</span>
+					</div>
+					<div class="progress-track">
+						<div class="progress-value"></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="metrics" aria-label="Financial summary">
+				<article class="card">
+					<p class="card-label">Total balance</p>
+					<p class="card-value">€4,820.00</p>
+					<p class="card-note">Across 3 accounts</p>
+				</article>
+
+				<article class="card">
+					<p class="card-label">Monthly income</p>
+					<p class="card-value">€2,450.00</p>
+					<p class="card-note">+4.2% this month</p>
+				</article>
+
+				<article class="card expense">
+					<p class="card-label">Monthly expenses</p>
+					<p class="card-value">€1,280.00</p>
+					<p class="card-note">€170 more than last month</p>
+				</article>
+
+				<article class="card">
+					<p class="card-label">Semester balance</p>
+					<p class="card-value">€5,940.00</p>
+					<p class="card-note">January–June 2026</p>
+				</article>
+			</section>
+
+			<div class="dashboard-grid">
+				<section class="card">
+					<div class="section-header">
+						<h3>Accounts</h3>
+						<span>View all</span>
+					</div>
+
+					<div class="account">
+						<div class="account-name">
+							<div class="account-icon">◉</div>
+							<div>
+								<strong>Personal</strong>
+								<small>Everyday account</small>
+							</div>
+						</div>
+						<span class="amount">€2,840.00</span>
+					</div>
+
+					<div class="account">
+						<div class="account-name">
+							<div class="account-icon">◇</div>
+							<div>
+								<strong>Savings</strong>
+								<small>Emergency fund</small>
+							</div>
+						</div>
+						<span class="amount">€1,750.00</span>
+					</div>
+
+					<div class="account">
+						<div class="account-name">
+							<div class="account-icon">▢</div>
+							<div>
+								<strong>Cash</strong>
+								<small>Physical wallet</small>
+							</div>
+						</div>
+						<span class="amount">€230.00</span>
+					</div>
+				</section>
+
+				<section class="card">
+					<div class="section-header">
+						<h3>Recent transactions</h3>
+						<span>September 2026</span>
+					</div>
+
+					<div class="transaction">
+						<div class="transaction-icon">↗</div>
+						<div>
+							<strong>Monthly salary</strong>
+							<br>
+							<small>Income</small>
+						</div>
+						<span class="amount">+€2,450.00</span>
+					</div>
+
+					<div class="transaction">
+						<div class="transaction-icon">⌂</div>
+						<div>
+							<strong>Rent</strong>
+							<br>
+							<small>Housing</small>
+						</div>
+						<span class="amount negative">−€780.00</span>
+					</div>
+
+					<div class="transaction">
+						<div class="transaction-icon">●</div>
+						<div>
+							<strong>Groceries</strong>
+							<br>
+							<small>Food</small>
+						</div>
+						<span class="amount negative">−€64.20</span>
+					</div>
+				</section>
+
+				<section class="card categories">
+					<div class="section-header">
+						<h3>Expense breakdown</h3>
+						<span>This month</span>
+					</div>
+
+					<div class="category-grid">
+						<div class="category">
+							<span>⌂ Housing</span>
+							<strong>€780.00</strong>
+							<small>61% of expenses</small>
+						</div>
+
+						<div class="category">
+							<span>● Food</span>
+							<strong>€245.00</strong>
+							<small>19% of expenses</small>
+						</div>
+
+						<div class="category">
+							<span>↔ Transport</span>
+							<strong>€140.00</strong>
+							<small>11% of expenses</small>
+						</div>
+
+						<div class="category">
+							<span>＋ Other</span>
+							<strong>€115.00</strong>
+							<small>9% of expenses</small>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<footer>
+				Budget Planner preview · Built as part of the 42 Inception project
+			</footer>
+		</main>
+	</div>
+</body>
+</html>

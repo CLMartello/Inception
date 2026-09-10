@@ -30,6 +30,17 @@ if [ ! -f "$WP_PATH/wp-load.php" ]; then
     cp -a /usr/src/wordpress/. "$WP_PATH/"
 fi
 
+if [ ! -d "$WP_PATH/wp-content/plugins/redis-cache" ]; then
+    echo "Copying Redis Object Cache plugin"
+
+    install -d -m 0755 -o www-data -g www-data \
+        "$WP_PATH/wp-content/plugins"
+
+    cp -a \
+        /usr/src/wordpress/wp-content/plugins/redis-cache \
+        "$WP_PATH/wp-content/plugins/"
+fi
+
 if [ ! -f "$WP_PATH/wp-config.php" ]; then
     echo "Creating WordPress configuration"
 
@@ -94,6 +105,49 @@ if ! wp core is-installed \
         --admin_password="$(cat /run/secrets/wp_admin_password)" \
         --admin_email="$WP_ADMIN_EMAIL" \
         --skip-email
+fi
+
+if getent hosts redis >/dev/null 2>&1; then
+    echo "Configuring Redis object cache"
+
+    wp config set WP_REDIS_HOST redis \
+        --allow-root \
+        --path="$WP_PATH" \
+        --type=constant
+
+    wp config set WP_REDIS_PORT 6379 \
+        --allow-root \
+        --path="$WP_PATH" \
+        --type=constant \
+        --raw
+
+    wp config set WP_REDIS_DATABASE 0 \
+        --allow-root \
+        --path="$WP_PATH" \
+        --type=constant \
+        --raw
+
+    wp config set WP_REDIS_CLIENT phpredis \
+        --allow-root \
+        --path="$WP_PATH" \
+        --type=constant
+
+    if ! wp plugin is-active redis-cache \
+        --allow-root \
+        --path="$WP_PATH"; then
+
+        wp plugin activate redis-cache \
+            --allow-root \
+            --path="$WP_PATH"
+    fi
+
+    wp redis enable \
+        --allow-root \
+        --path="$WP_PATH"
+
+    echo "Redis object cache enabled"
+else
+    echo "Redis service not present; continuing without object cache"
 fi
 
 if ! wp user get "$WP_USER" \
