@@ -1,118 +1,93 @@
-# Developer Documentation
+# Inception Developer Documentation
+
+## Architecture
+
+The mandatory request flow is:
+
+```text
+Browser
+   |
+   | HTTPS :443
+   v
+NGINX
+   |
+   | FastCGI :9000
+   v
+WordPress + PHP-FPM
+   |
+   | MariaDB protocol :3306
+   v
+MariaDB
+```
+
+Only NGINX publishes a mandatory host port. WordPress and MariaDB communicate through the internal Docker network.
 
 ## Prerequisites
 
-The project must run inside a virtual machine with Docker.
-
-The following programs are required:
+The project must run inside a Linux virtual machine with:
 
 - Docker Engine
-- Docker Compose
+- Docker Compose plugin
 - GNU Make
-- Git
 
-Check that they are installed:
+Verify the required tools:
 
 ```bash
 docker --version
 docker compose version
 make --version
-git --version
 ```
 
-The current user must be allowed to run Docker commands. If `docker` is not listed, add the user to the Docker group:
-
-```bash
-sudo usermod -aG docker "$USER"
-```
-
-Log out and log back in after running this command.
-
-## Project configuration
-
-Clone the repository and enter its directory:
+## Clone the repository
 
 ```bash
 git clone <repository-url> inception
 cd inception
 ```
 
-The project configuration is stored in:
+## Environment configuration
 
-```text
-srcs/.env
+Create the local environment file:
+
+```bash
+cp srcs/.env.example srcs/.env
 ```
 
-Create this file if it does not exist. It must define the non-secret configuration used by Docker Compose. For example:
+Edit it to update the login, domain, emails, and data path when using another virtual machine account.
 
-```env
-DOMAIN_NAME=clumertz.42.fr
-
-MYSQL_DATABASE=wordpress
-MYSQL_USER=wpuser
-
-WP_TITLE=Inception
-WP_ADMIN_USER=clumertz_owner
-WP_ADMIN_EMAIL=replace-with-your-email@example.com
-WP_USER=clumertz_user
-WP_USER_EMAIL=replace-with-your-email@example.com
-
-DATA_PATH=/home/clumertz/data
-```
-
-Change the login, email addresses, domain, and data path when running the project under another user account.
+The real `.env` file must not be committed to Git.
 
 ## Secrets
 
-Create the secrets directory:
+Create the secret files:
 
 ```bash
-mkdir -p secrets
+make secrets
 ```
 
-Create the required secret files:
+Insert one non-empty password into each file:
 
 ```bash
-touch secrets/db_password.txt
-touch secrets/db_root_password.txt
-touch secrets/wp_admin_password.txt
-touch secrets/wp_user_password.txt
+nano secrets/db_root_password.txt
+nano secrets/db_password.txt
+nano secrets/wp_admin_password.txt
+nano secrets/wp_user_password.txt
+nano secrets/ftp_password.txt
 ```
 
-Edit each file and insert one non-empty password as follows:
-
-- `db_password.txt`: MariaDB password used by WordPress.
-- `db_root_password.txt`: MariaDB root password.
-- `wp_admin_password.txt`: WordPress administrator password.
-- `wp_user_password.txt`: regular WordPress user password.
-
-Restrict access to the secret files:
+Restrict their permissions:
 
 ```bash
 chmod 600 secrets/*.txt
 ```
 
-The secret files and `srcs/.env` must not be committed to Git. Confirm that Git ignores them:
-
-```bash
-git check-ignore -v secrets/db_password.txt
-git check-ignore -v srcs/.env
-```
-
-## Host data directories
-
-Create the directories used for persistent data:
-
-```bash
-mkdir -p /home/clumertz/data/mariadb
-mkdir -p /home/clumertz/data/wordpress
-```
-
-These paths must match `DATA_PATH` in `srcs/.env`.
-
 ## Domain configuration
 
-The project domain must resolve to the machine running Docker.
+Edit:
+
+```bash
+sudo nano /etc/hosts
+```
 
 Add:
 
@@ -120,103 +95,133 @@ Add:
 127.0.0.1 clumertz.42.fr
 ```
 
-## Build and launch with the Makefile
-
-From the project root, run:
+## Build and start the mandatory part
 
 ```bash
-cd ~/inception
 make
 ```
 
-Check the service status:
+This creates the data directories, builds the mandatory images, and starts:
+
+- MariaDB
+- WordPress
+- NGINX
+
+## Build and start the bonus part
+
+```bash
+make bonus
+```
+
+This starts the mandatory services and:
+
+- Redis
+- FTP
+- Static website
+- Adminer
+- cAdvisor
+
+## Makefile commands
+
+Start the mandatory infrastructure:
+
+```bash
+make
+```
+
+Start mandatory and bonus services:
+
+```bash
+make bonus
+```
+
+Display running services:
 
 ```bash
 make status
 ```
 
-Stop and remove the containers:
+Display logs:
+
+```bash
+make logs
+```
+
+Stop containers:
+
+```bash
+make stop
+```
+
+Start stopped containers:
+
+```bash
+make start
+```
+
+Restart mandatory services:
+
+```bash
+make restart
+```
+
+Restart mandatory and bonus services:
+
+```bash
+make bonus-restart
+```
+
+Stop and remove containers:
 
 ```bash
 make down
 ```
 
-Start them again:
+Clean project containers:
 
 ```bash
-make
+make clean
 ```
 
-Remove the Docker resources created by the project:
+Remove containers, images, and Docker volume definitions:
 
 ```bash
 make fclean
 ```
 
-The persistent files under `/home/clumertz/data` may remain after `make fclean`.
-
-## Build and launch with Docker Compose
-
-Docker Compose commands must be executed from the `srcs` directory:
+Rebuild the mandatory infrastructure:
 
 ```bash
-cd ~/inception/srcs
+make re
 ```
 
-Validate the Compose configuration:
+## Network
+
+Display Docker networks:
 
 ```bash
-docker compose config --quiet
+docker network ls
 ```
 
-Build the images:
+Inspect the project network:
 
 ```bash
-docker compose build
+docker network inspect srcs_inception
 ```
 
-Start the services in the background:
+Docker provides internal DNS. Services connect using names such as:
 
-```bash
-docker compose up -d
+```text
+mariadb:3306
+wordpress:9000
+redis:6379
 ```
 
-Build changed images and start the services:
+Fixed container IP addresses, host networking, and legacy Docker links are not used.
 
-```bash
-docker compose up -d --build
-```
+## Volumes
 
-Stop and remove the containers and project network:
-
-```bash
-docker compose down
-```
-
-## Manage containers
-
-Display the project containers:
-
-```bash
-docker compose ps
-```
-
-Display logs from every service:
-
-```bash
-docker compose logs
-```
-
-Restart all services:
-
-```bash
-docker compose restart
-```
-
-
-## Manage volumes
-
-Display Docker volumes:
+Display the volumes:
 
 ```bash
 docker volume ls
@@ -234,50 +239,92 @@ Inspect the WordPress volume:
 docker volume inspect srcs_wordpress_data
 ```
 
-
-## Data storage and persistence
-
-MariaDB data is stored on the host in:
+The volume configuration points to:
 
 ```text
 /home/clumertz/data/mariadb
+/home/clumertz/data/wordpress
 ```
 
-It is mounted inside the MariaDB container at:
+The exact `srcs_` prefix can change if a different Compose project name is used.
+
+## Data persistence
+
+MariaDB stores its data inside the container at:
 
 ```text
 /var/lib/mysql
 ```
 
-WordPress data is stored on the host in:
+This is connected to:
 
 ```text
-/home/clumertz/data/wordpress
+/home/clumertz/data/mariadb
 ```
 
-It is mounted inside the WordPress container at:
+WordPress stores its files inside the container at:
 
 ```text
 /var/www/html
 ```
 
-The data is stored outside the containers. Removing and recreating a container does not remove the website or database.
+This is connected to:
 
-To test persistence:
-
-1. Create or modify content in WordPress.
-2. Stop the project:
-
-```bash
-cd ~/inception
-make down
+```text
+/home/clumertz/data/wordpress
 ```
 
-3. Start the project again:
+Containers can be removed and recreated without deleting the website or database.
+
+Test persistence by creating a WordPress post, running:
 
 ```bash
+make down
 make
 ```
 
-4. Open `https://clumertz.42.fr` and confirm that the content still exists.
+Then verify that the post still exists.
 
+## Mandatory service ports
+
+- NGINX: `443`
+- WordPress PHP-FPM: `9000`, internal only
+- MariaDB: `3306`, internal only
+
+## Bonus service ports
+
+- Redis: `6379`, internal only
+- FTP control connection: `21`
+- FTP passive connections: `21000-21010`
+- Static website: `8080`
+- Adminer: `8081`
+- cAdvisor: `8090`
+
+## Access addresses
+
+```text
+WordPress:       https://clumertz.42.fr
+WordPress admin: https://clumertz.42.fr/wp-admin/
+Static website:  http://127.0.0.1:8080
+Adminer:         http://127.0.0.1:8081
+cAdvisor:        http://127.0.0.1:8090
+FTP:             ftp://127.0.0.1
+```
+
+## Clean rebuild tests
+
+Test only the mandatory part:
+
+```bash
+make fclean
+make
+make status
+```
+
+Test mandatory and bonus services:
+
+```bash
+make fclean
+make bonus
+make status
+```
