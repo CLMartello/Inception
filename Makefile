@@ -78,6 +78,6 @@ fclean:
 re: fclean up
 
 .PHONY: all secrets check-secrets prepare \
-	bonus-secrets check-bonus-secrets bonus-prepare \
+	check-bonus-secrets bonus-prepare \
 	up down start stop restart status logs clean fclean re \
 	bonus bonus-start bonus-restart
