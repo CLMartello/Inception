@@ -112,17 +112,20 @@ services:
       - mariadb
     restart: unless-stopped
     
-  monitor:
+  cadvisor:
     profiles:
       - bonus
     build:
-      context: ./requirements/bonus/monitor
-    image: monitor
-    container_name: monitor
-    environment:
-      MONITOR_PORT: "8090"
+      context: ./requirements/bonus/cadvisor
+    image: cadvisor
+    container_name: cadvisor
     ports:
       - "8090:8090"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
     networks:
       - inception
     restart: unless-stopped
